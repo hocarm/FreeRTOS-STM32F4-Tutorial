@@ -429,7 +429,7 @@ void Send_Data_to_USB(int16_t *Value_DAT)
   if (((USBD_CDC_HandleTypeDef *)(hUsbDeviceFS.pClassData))->TxState == 0)
   {
 
-    sprintf(dataOut, "Gyr -> GYR_X: %5.1f, GYR_Y: %5.1f, GYR_Z: %5.1f\n", Value_DAT[0], Value_DAT[1], Value_DAT[2]);
+    sprintf(dataOut, "Gyr -> GYR_X: %d, GYR_Y: %d, GYR_Z: %d\n", Value_DAT[0], Value_DAT[1], Value_DAT[2]);
     /* Transmiting data to USB over CDC interface */
     /* (Browse through usbd_cdc_if.c file for the correct function to use */
     CDC_Transmit_FS(dataOut, strlen(dataOut));
