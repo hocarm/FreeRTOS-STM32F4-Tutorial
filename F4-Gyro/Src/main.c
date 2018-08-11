@@ -135,9 +135,9 @@ int main(void)
   while (1)
   {
 
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
+    /* USER CODE BEGIN 3 */
     /* Ready gyro angular data */
     BSP_ACCELERO_GetXYZ(buffer);
     HAL_Delay(250);
@@ -152,17 +152,17 @@ int main(void)
       {
         /* LED5 On */
         BSP_LED_On(LED5);
-        HAL_Delay(10);
+        HAL_Delay(250);
       }
       else if (xval < ThresholdLow)
       {
         /* LED4 On */
         BSP_LED_On(LED4);
-        HAL_Delay(10);
+        HAL_Delay(250);
       }
       else
       {
-        HAL_Delay(10);
+        HAL_Delay(250);
       }
     }
     else
@@ -171,17 +171,17 @@ int main(void)
       {
         /* LED6 On */
         BSP_LED_On(LED6);
-        HAL_Delay(10);
+        HAL_Delay(250);
       }
       else if (yval > ThresholdHigh)
       {
         /* LED3 On */
         BSP_LED_On(LED3);
-        HAL_Delay(10);
+        HAL_Delay(250);
       }
       else
       {
-        HAL_Delay(10);
+        HAL_Delay(250);
       }
     }
 
@@ -189,9 +189,8 @@ int main(void)
     BSP_LED_Off(LED4);
     BSP_LED_Off(LED5);
     BSP_LED_Off(LED6);
-		}
+  }
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -205,13 +204,13 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
 
-    /**Configure the main internal regulator output voltage 
+  /**Configure the main internal regulator output voltage 
     */
   __HAL_RCC_PWR_CLK_ENABLE();
 
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -226,10 +225,9 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -248,11 +246,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time 
+  /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
-    /**Configure the Systick 
+  /**Configure the Systick 
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -277,7 +275,6 @@ static void MX_I2C1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /* I2S3 init function */
@@ -297,7 +294,6 @@ static void MX_I2S3_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /* SPI1 init function */
@@ -321,7 +317,6 @@ static void MX_SPI1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /** Configure pins as 
@@ -353,8 +348,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-                          |GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 | GPIO_PIN_4, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PE3 */
   GPIO_InitStruct.Pin = GPIO_PIN_3;
@@ -400,8 +394,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PD12 PD13 PD14 PD15 
                            PD4 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-                          |GPIO_PIN_4;
+  GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 | GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -418,7 +411,6 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
@@ -447,13 +439,13 @@ void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1)
+  while (1)
   {
   }
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -461,8 +453,8 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
+void assert_failed(uint8_t *file, uint32_t line)
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
