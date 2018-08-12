@@ -10,6 +10,7 @@
       <TargetName>F4-Gyro-RTOS</TargetName>
       <ToolsetNumber>0x4</ToolsetNumber>
       <ToolsetName>ARM-ADS</ToolsetName>
+      <pCCUsed>5060183::V5.06 update 2 (build 183)::ARMCC</pCCUsed>
       <TargetOption>
         <TargetCommonOption>
           <Device>STM32F407VGTx</Device>
@@ -333,7 +334,7 @@
               <MiscControls></MiscControls>
               <Define>USE_HAL_DRIVER,STM32F407xx</Define>
               <Undefine></Undefine>
-              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Drivers/CMSIS/Include</IncludePath>
+              <IncludePath>../Inc;../Drivers/STM32F4xx_HAL_Driver/Inc;../Drivers/STM32F4xx_HAL_Driver/Inc/Legacy;../Middlewares/Third_Party/FreeRTOS/Source/portable/RVDS/ARM_CM4F;../Middlewares/ST/STM32_USB_Device_Library/Core/Inc;../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Inc;../Drivers/CMSIS/Device/ST/STM32F4xx/Include;../Middlewares/Third_Party/FreeRTOS/Source/include;../Middlewares/Third_Party/FreeRTOS/Source/CMSIS_RTOS;../Drivers/CMSIS/Include;..\Drivers\BSP\STM32F4-Discovery</IncludePath>
             </VariousControls>
           </Cads>
           <Aads>
@@ -382,9 +383,6 @@
               <FilePath>startup_stm32f407xx.s</FilePath>
             </File>
           </Files>
-        </Group>
-        <Group>
-          <GroupName>::CMSIS</GroupName>
         </Group>
         <Group>
           <GroupName>Application/User</GroupName>
@@ -635,6 +633,34 @@
               <FilePath>../Middlewares/ST/STM32_USB_Device_Library/Class/CDC/Src/usbd_cdc.c</FilePath>
             </File>
           </Files>
+        </Group>
+        <Group>
+          <GroupName>Drivers/BSP</GroupName>
+          <Files>
+            <File>
+              <FileName>stm32f4_discovery.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\STM32F4-Discovery\stm32f4_discovery.c</FilePath>
+            </File>
+            <File>
+              <FileName>lis3dsh.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\Components\lis3dsh\lis3dsh.c</FilePath>
+            </File>
+            <File>
+              <FileName>stm32f4_discovery_accelerometer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\STM32F4-Discovery\stm32f4_discovery_accelerometer.c</FilePath>
+            </File>
+            <File>
+              <FileName>lis302dl.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>..\Drivers\BSP\Components\lis302dl\lis302dl.c</FilePath>
+            </File>
+          </Files>
+        </Group>
+        <Group>
+          <GroupName>::CMSIS</GroupName>
         </Group>
       </Groups>
     </Target>
