@@ -28,7 +28,7 @@ Grab the official utility from [ST website](http://www.st.com/web/catalog/tools/
 ### Install STM32 Virtual COM Port Driver
 
 #### Windows
-Grab the official utility from [ST website](https://www.st.com/en/development-tools/stsw-stm32102.html)
+Grab the official driver from [ST website](https://www.st.com/en/development-tools/stsw-stm32102.html)
 
 ### Compile this example
 Open *.uvprojx on MDK-ARM folder and press F7 button.
