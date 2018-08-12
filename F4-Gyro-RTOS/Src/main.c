@@ -53,7 +53,9 @@
 #include "usb_device.h"
 
 /* USER CODE BEGIN Includes */
-
+#include "stm32f4_discovery_accelerometer.h"
+#include "stm32f4_discovery.h"
+#include "usbd_cdc.h"
 /* USER CODE END Includes */
 
 /* Private variables ---------------------------------------------------------*/
@@ -68,7 +70,16 @@ osThreadId Task02Handle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
+osMailQId(myMailQID); //Define mail queue
+typedef struct
+{
+  int16_t x_ang_rate;
+  int16_t y_ang_rate;
+  int16_t z_ang_rate;
 
+} GYRO_DATA_T;
+int16_t ThresholdHigh = 200;
+int16_t ThresholdLow = -200;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -77,8 +88,8 @@ static void MX_GPIO_Init(void);
 static void MX_I2C1_Init(void);
 static void MX_I2S3_Init(void);
 static void MX_SPI1_Init(void);
-void StartTask01(void const * argument);
-void StartTask02(void const * argument);
+void StartTask01(void const *argument);
+void StartTask02(void const *argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -86,7 +97,7 @@ void StartTask02(void const * argument);
 /* USER CODE END PFP */
 
 /* USER CODE BEGIN 0 */
-
+#define ABS(x) (x < 0) ? (-x) : x
 /* USER CODE END 0 */
 
 /**
@@ -152,12 +163,13 @@ int main(void)
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
+  osMailQDef(myMailQ, 5, GYRO_DATA_T);
+  myMailQID = osMailCreate(osMailQ(myMailQ), NULL);
   /* USER CODE END RTOS_QUEUES */
- 
 
   /* Start scheduler */
   osKernelStart();
-  
+
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
@@ -165,13 +177,11 @@ int main(void)
   while (1)
   {
 
-  /* USER CODE END WHILE */
+    /* USER CODE END WHILE */
 
-  /* USER CODE BEGIN 3 */
-
+    /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
-
 }
 
 /**
@@ -185,13 +195,13 @@ void SystemClock_Config(void)
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
   RCC_PeriphCLKInitTypeDef PeriphClkInitStruct;
 
-    /**Configure the main internal regulator output voltage 
+  /**Configure the main internal regulator output voltage 
     */
   __HAL_RCC_PWR_CLK_ENABLE();
 
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -206,10 +216,9 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Initializes the CPU, AHB and APB busses clocks 
+  /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
-                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -228,11 +237,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-    /**Configure the Systick interrupt time 
+  /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
 
-    /**Configure the Systick 
+  /**Configure the Systick 
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -257,7 +266,6 @@ static void MX_I2C1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /* I2S3 init function */
@@ -277,7 +285,6 @@ static void MX_I2S3_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /* SPI1 init function */
@@ -301,7 +308,6 @@ static void MX_SPI1_Init(void)
   {
     _Error_Handler(__FILE__, __LINE__);
   }
-
 }
 
 /** Configure pins as 
@@ -333,8 +339,7 @@ static void MX_GPIO_Init(void)
   HAL_GPIO_WritePin(GPIOC, GPIO_PIN_0, GPIO_PIN_RESET);
 
   /*Configure GPIO pin Output Level */
-  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-                          |GPIO_PIN_4, GPIO_PIN_RESET);
+  HAL_GPIO_WritePin(GPIOD, GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 | GPIO_PIN_4, GPIO_PIN_RESET);
 
   /*Configure GPIO pin : PE3 */
   GPIO_InitStruct.Pin = GPIO_PIN_3;
@@ -380,8 +385,7 @@ static void MX_GPIO_Init(void)
 
   /*Configure GPIO pins : PD12 PD13 PD14 PD15 
                            PD4 */
-  GPIO_InitStruct.Pin = GPIO_PIN_12|GPIO_PIN_13|GPIO_PIN_14|GPIO_PIN_15 
-                          |GPIO_PIN_4;
+  GPIO_InitStruct.Pin = GPIO_PIN_12 | GPIO_PIN_13 | GPIO_PIN_14 | GPIO_PIN_15 | GPIO_PIN_4;
   GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_LOW;
@@ -398,36 +402,135 @@ static void MX_GPIO_Init(void)
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
   GPIO_InitStruct.Pull = GPIO_NOPULL;
   HAL_GPIO_Init(GPIOE, &GPIO_InitStruct);
-
 }
 
 /* USER CODE BEGIN 4 */
+void GYRO_Task(void)
+{
+  /* Initialize the L3GD20 Gyroscope */
+  if (BSP_ACCELERO_Init() != HAL_OK)
+  {
+    Error_Handler();
+  }
+  /* Infinite loop */
+  GYRO_DATA_T gyro_data;
 
+  osSignalWait(0x1, osWaitForever); //Wait for signal. Check cmsis_os.c for API name.
+  for (;;)
+  {
+    BSP_ACCELERO_GetXYZ((int16_t *)&gyro_data);
+    /*Send gyroscope data to USB*/
+    GYRO_DATA_T *gyro_tx;
+    do
+    {
+      gyro_tx = (GYRO_DATA_T *)osMailAlloc(myMailQID, osWaitForever); //Allocate memory slot
+    } while (NULL == gyro_tx);                                        //Need to check for NULL because timeout value is not used in FreeRTOS
+    gyro_tx->x_ang_rate = gyro_data.x_ang_rate;
+    gyro_tx->y_ang_rate = gyro_data.y_ang_rate;
+    gyro_tx->z_ang_rate = gyro_data.z_ang_rate;
+    osMailPut(myMailQID, gyro_tx); //Put data into mail queue. Check cmsis_os.c for API name
+
+    /* Manage data */
+
+    /* Assume all data within the threshold, turn off all LED */
+    BSP_LED_Off(LED3);
+    BSP_LED_Off(LED4);
+    BSP_LED_Off(LED5);
+    BSP_LED_Off(LED6);
+    if ((ABS(gyro_data.x_ang_rate)) > (ABS(gyro_data.y_ang_rate)))
+    {
+      if (gyro_data.x_ang_rate > ThresholdHigh)
+      {
+        /* LED5 On */
+        BSP_LED_On(LED5);
+        osDelay(250);
+      }
+      else if (gyro_data.x_ang_rate < ThresholdLow)
+      {
+        /* LED4 On */
+        BSP_LED_On(LED4);
+        osDelay(250);
+      }
+      else
+      {
+        osDelay(250);
+      }
+    }
+    else
+    {
+      if (gyro_data.y_ang_rate < ThresholdLow)
+      {
+        /* LED6 On */
+        BSP_LED_On(LED6);
+        osDelay(250);
+      }
+      else if (gyro_data.y_ang_rate > ThresholdHigh)
+      {
+        /* LED3 On */
+        BSP_LED_On(LED3);
+        osDelay(250);
+      }
+      else
+      {
+        osDelay(250);
+      }
+    }
+
+    BSP_LED_Off(LED3);
+    BSP_LED_Off(LED4);
+    BSP_LED_Off(LED5);
+    BSP_LED_Off(LED6);
+  }
+}
+void USB_Task(void)
+{
+
+  uint8_t msg_buf[128] = "HelloWorld\n\r";
+  osSignalWait(0x1, osWaitForever);                        //Wait for USB host to configure port
+  osSignalSet(Task02Handle, 0x1);                          //Set signal in Task 02
+  CDC_Transmit_FS(msg_buf, strlen((const char *)msg_buf)); //Send data to USB host
+  /* Infinite loop */
+  for (;;)
+  {
+    osEvent event = osMailGet(myMailQID, osWaitForever); //Get mail
+    GYRO_DATA_T *gyro_rx = event.value.p;
+    snprintf((char *)msg_buf, 128, "GYR_X: %d, GYR_Y: %d, GYR_Z: %d\n\r", gyro_rx->x_ang_rate, gyro_rx->y_ang_rate, gyro_rx->z_ang_rate);
+    osMailFree(myMailQID, gyro_rx); //Free mail queue memory
+    CDC_Transmit_FS(msg_buf, strlen((const char *)msg_buf));
+  }
+}
 /* USER CODE END 4 */
 
 /* StartTask01 function */
-void StartTask01(void const * argument)
+void StartTask01(void const *argument)
 {
   /* init code for USB_DEVICE */
   MX_USB_DEVICE_Init();
 
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  for(;;)
+  USB_Task();
+  for (;;)
   {
     osDelay(1);
+    // HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_13);
+    // osDelay(250);
   }
-  /* USER CODE END 5 */ 
+  /* USER CODE END 5 */
 }
 
 /* StartTask02 function */
-void StartTask02(void const * argument)
+void StartTask02(void const *argument)
 {
   /* USER CODE BEGIN StartTask02 */
   /* Infinite loop */
-  for(;;)
+  GYRO_Task();
+  for (;;)
   {
     osDelay(1);
+    // HAL_GPIO_TogglePin(GPIOD, GPIO_PIN_14);
+    // osDelay(250);
+
   }
   /* USER CODE END StartTask02 */
 }
@@ -445,7 +548,8 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM6) {
+  if (htim->Instance == TIM6)
+  {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
@@ -463,13 +567,13 @@ void _Error_Handler(char *file, int line)
 {
   /* USER CODE BEGIN Error_Handler_Debug */
   /* User can add his own implementation to report the HAL error return state */
-  while(1)
+  while (1)
   {
   }
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef  USE_FULL_ASSERT
+#ifdef USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -477,8 +581,8 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t* file, uint32_t line)
-{ 
+void assert_failed(uint8_t *file, uint32_t line)
+{
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
      tex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

@@ -51,7 +51,7 @@
 #include "usbd_cdc_if.h"
 
 /* USER CODE BEGIN INCLUDE */
-
+#include "cmsis_os.h"
 /* USER CODE END INCLUDE */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -93,8 +93,8 @@
 /* USER CODE BEGIN PRIVATE_DEFINES */
 /* Define size for the receive and transmit buffer over CDC */
 /* It's up to user to redefine and/or remove those define */
-#define APP_RX_DATA_SIZE  2048
-#define APP_TX_DATA_SIZE  2048
+#define APP_RX_DATA_SIZE  64
+#define APP_TX_DATA_SIZE  64
 /* USER CODE END PRIVATE_DEFINES */
 
 /**
@@ -127,7 +127,8 @@ uint8_t UserRxBufferFS[APP_RX_DATA_SIZE];
 uint8_t UserTxBufferFS[APP_TX_DATA_SIZE];
 
 /* USER CODE BEGIN PRIVATE_VARIABLES */
-
+extern osThreadId Task01Handle;
+uint8_t TempBuf_USB[7];
 /* USER CODE END PRIVATE_VARIABLES */
 
 /**
@@ -250,11 +251,26 @@ static int8_t CDC_Control_FS(uint8_t cmd, uint8_t* pbuf, uint16_t length)
   /*                                        4 - Space                            */
   /* 6      | bDataBits  |   1   | Number Data bits (5, 6, 7, 8 or 16).          */
   /*******************************************************************************/
-    case CDC_SET_LINE_CODING:
-
+  case CDC_SET_LINE_CODING:   
+    TempBuf_USB[0]=pbuf[0];
+    TempBuf_USB[1]=pbuf[1];
+    TempBuf_USB[2]=pbuf[2];
+    TempBuf_USB[3]=pbuf[3];
+    TempBuf_USB[4]=pbuf[4];
+    TempBuf_USB[5]=pbuf[5];
+    TempBuf_USB[6]=pbuf[6];
+    /*Use CDC_SET_LINE_CODING to assume USB device has been configured*/
+    osSignalSet(Task01Handle, 0x1);//Signal Task 1 to start execution
     break;
 
-    case CDC_GET_LINE_CODING:
+  case CDC_GET_LINE_CODING:     
+    pbuf[0]=TempBuf_USB[0];
+    pbuf[1]=TempBuf_USB[1];
+    pbuf[2]=TempBuf_USB[2];
+    pbuf[3]=TempBuf_USB[3];
+    pbuf[4]=TempBuf_USB[4];
+    pbuf[5]=TempBuf_USB[5];
+    pbuf[6]=TempBuf_USB[6];
 
     break;
 
