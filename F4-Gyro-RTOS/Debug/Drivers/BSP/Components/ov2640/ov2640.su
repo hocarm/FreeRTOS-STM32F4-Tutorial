@@ -1,0 +1,3 @@
+ov2640.c:1046:6:ov2640_Init	16	static
+ov2640.c:1172:10:ov2640_ReadID	8	static
+ov2640.c:1112:6:ov2640_Config	16	static
