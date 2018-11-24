@@ -59,7 +59,7 @@
 osThreadId Sender1Handle;
 osThreadId ReceiverHandle;
 osThreadId Sender2Handle;
-osMessageQId Queue1Handle;
+osMailQId Queue1Handle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -68,8 +68,8 @@ typedef struct
   uint8_t Value;
   uint8_t Source;
 } Data;
-Data DataToSend1 = {10, 1};
-Data DataToSend2 = {20, 2};
+// Data DataToSend1 = {10, 1};
+// Data DataToSend2 = {20, 2};
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
@@ -159,8 +159,9 @@ int main(void)
   /* Create the queue(s) */
   /* definition and creation of Queue1 */
   /* what about the sizeof here??? cd native code */
-  osMessageQDef(Queue1, 256, Data);
-  Queue1Handle = osMessageCreate(osMessageQ(Queue1), NULL);
+  // osMessageQDef(Queue1, 256, Data);
+  osMailQDef(Queue1, 1, Data);
+  Queue1Handle = osMailCreate(osMailQ(Queue1), NULL);
 
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
@@ -273,16 +274,21 @@ int fputc(int ch, FILE *f)
 /* USER CODE END Header_StartSender1 */
 void StartSender1(void const *argument)
 {
-
+  Data *dataMail;
   /* USER CODE BEGIN 5 */
   /* Infinite loop */
-  uint32_t i = 0;
   for (;;)
   {
     printf("Task 1\n");
-    osMessagePut(Queue1Handle, (uint32_t)&DataToSend1, 200);
-    printf("Task 1 delay\n");
-    osDelay(2000);
+    dataMail = osMailAlloc(Queue1Handle, osWaitForever); /* Allocate memory */
+    dataMail->Value = 10;
+    dataMail->Source = 1;
+
+    if (osMailPut(Queue1Handle, dataMail) != osOK) /* Send Mail */
+    {
+      printf("Task 1 send mail\n");
+      osDelay(250);
+    }
   }
   /* USER CODE END 5 */
 }
@@ -298,20 +304,28 @@ void StartReceiver(void const *argument)
 {
   /* USER CODE BEGIN StartReceiver */
   osEvent retvalue;
+  Data *dataMail;
   /* Infinite loop */
   for (;;)
   {
-    retvalue = osMessageGet(Queue1Handle, 4000);
+    /* Get the message from the queue */
+    retvalue = osMailGet(Queue1Handle, osWaitForever); /* wait for mail */
     printf("Receiver \n");
-    if (((Data *)retvalue.value.p)->Source == 1)
+    if (retvalue.status == osEventMail)
     {
-      printf("Receiver receive message from sender 1 \n");
+      dataMail = retvalue.value.p;
+      if (dataMail->Source == 1)
+      {
+        printf("Receiver receive message from sender 1 \n");
+      }
+      else
+      {
+        printf("Receiver receive message from sender 2 \n");
+      }
+      printf("Value: %d \n", dataMail->Value);
+      printf("Source: %d \n", dataMail->Source);
+      osMailFree(Queue1Handle, dataMail); /* free memory allocated for mail */
     }
-    else
-    {
-      printf("Receiver receive message from sender 2 \n");
-    }
-    printf("Data: %d \n", ((Data *)retvalue.value.p)->Value);
   }
   /* USER CODE END StartReceiver */
 }
@@ -326,13 +340,20 @@ void StartReceiver(void const *argument)
 void StartSender2(void const *argument)
 {
   /* USER CODE BEGIN StartSender2 */
+  Data *dataMail;
   /* Infinite loop */
   for (;;)
   {
     printf("Task 2\n");
-    osMessagePut(Queue2Handle, (uint32_t)&DataToSend2, 200);
-    printf("Task 2 delay\n");
-    osDelay(2000);
+    dataMail = osMailAlloc(Queue1Handle, osWaitForever); /* Allocate memory */
+    dataMail->Value = 20;
+    dataMail->Source = 2;
+
+    if (osMailPut(Queue1Handle, dataMail) != osOK) /* Send Mail */
+    {
+      printf("Task 2 send mail\n");
+      osDelay(250);
+    }
   }
   /* USER CODE END StartSender2 */
 }

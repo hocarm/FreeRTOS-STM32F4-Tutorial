@@ -3,8 +3,8 @@
  * Auto generated Run-Time-Environment Component Configuration File
  *      *** Do not modify ! ***
  *
- * Project: 'Task' 
- * Target:  'Task' 
+ * Project: 'Queue' 
+ * Target:  'Queue' 
  */
 
 #ifndef RTE_COMPONENTS_H
