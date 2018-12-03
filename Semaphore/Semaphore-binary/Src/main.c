@@ -58,9 +58,7 @@
 /* Private variables ---------------------------------------------------------*/
 osThreadId Task1Handle;
 osThreadId Task2Handle;
-osThreadId Task3Handle;
 osSemaphoreId myBinarySem01Handle;
-osSemaphoreId myCountingSem01Handle;
 
 /* USER CODE BEGIN PV */
 /* Private variables ---------------------------------------------------------*/
@@ -70,9 +68,8 @@ osSemaphoreId myCountingSem01Handle;
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 static void MX_GPIO_Init(void);
-void StartTask1(void const *argument);
-void StartTask2(void const *argument);
-void StartTask3(void const *argument);
+void StartTask1(void const * argument);
+void StartTask2(void const * argument);
 
 /* USER CODE BEGIN PFP */
 /* Private function prototypes -----------------------------------------------*/
@@ -131,10 +128,6 @@ int main(void)
   osSemaphoreDef(myBinarySem01);
   myBinarySem01Handle = osSemaphoreCreate(osSemaphore(myBinarySem01), 1);
 
-  /* definition and creation of myCountingSem01 */
-  osSemaphoreDef(myCountingSem01);
-  myCountingSem01Handle = osSemaphoreCreate(osSemaphore(myCountingSem01), 2);
-
   /* USER CODE BEGIN RTOS_SEMAPHORES */
   /* add semaphores, ... */
   /* USER CODE END RTOS_SEMAPHORES */
@@ -152,10 +145,6 @@ int main(void)
   osThreadDef(Task2, StartTask2, osPriorityNormal, 0, 128);
   Task2Handle = osThreadCreate(osThread(Task2), NULL);
 
-  /* definition and creation of Task3 */
-  osThreadDef(Task3, StartTask3, osPriorityIdle, 0, 128);
-  Task3Handle = osThreadCreate(osThread(Task3), NULL);
-
   /* USER CODE BEGIN RTOS_THREADS */
   /* add threads, ... */
   /* USER CODE END RTOS_THREADS */
@@ -163,10 +152,11 @@ int main(void)
   /* USER CODE BEGIN RTOS_QUEUES */
   /* add queues, ... */
   /* USER CODE END RTOS_QUEUES */
+ 
 
   /* Start scheduler */
   osKernelStart();
-
+  
   /* We should never get here as control is now taken by the scheduler */
 
   /* Infinite loop */
@@ -174,11 +164,12 @@ int main(void)
   while (1)
   {
 
-    /* USER CODE END WHILE */
+  /* USER CODE END WHILE */
 
-    /* USER CODE BEGIN 3 */
+  /* USER CODE BEGIN 3 */
   }
   /* USER CODE END 3 */
+
 }
 
 /**
@@ -191,13 +182,13 @@ void SystemClock_Config(void)
   RCC_OscInitTypeDef RCC_OscInitStruct;
   RCC_ClkInitTypeDef RCC_ClkInitStruct;
 
-  /**Configure the main internal regulator output voltage 
+    /**Configure the main internal regulator output voltage 
     */
   __HAL_RCC_PWR_CLK_ENABLE();
 
   __HAL_PWR_VOLTAGESCALING_CONFIG(PWR_REGULATOR_VOLTAGE_SCALE1);
 
-  /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
   RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSE;
   RCC_OscInitStruct.HSEState = RCC_HSE_ON;
@@ -212,9 +203,10 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  /**Initializes the CPU, AHB and APB busses clocks 
+    /**Initializes the CPU, AHB and APB busses clocks 
     */
-  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+  RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK|RCC_CLOCKTYPE_SYSCLK
+                              |RCC_CLOCKTYPE_PCLK1|RCC_CLOCKTYPE_PCLK2;
   RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_PLLCLK;
   RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
   RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV4;
@@ -225,11 +217,11 @@ void SystemClock_Config(void)
     _Error_Handler(__FILE__, __LINE__);
   }
 
-  /**Configure the Systick interrupt time 
+    /**Configure the Systick interrupt time 
     */
-  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq() / 1000);
+  HAL_SYSTICK_Config(HAL_RCC_GetHCLKFreq()/1000);
 
-  /**Configure the Systick 
+    /**Configure the Systick 
     */
   HAL_SYSTICK_CLKSourceConfig(SYSTICK_CLKSOURCE_HCLK);
 
@@ -251,6 +243,7 @@ static void MX_GPIO_Init(void)
   __HAL_RCC_GPIOH_CLK_ENABLE();
   __HAL_RCC_GPIOA_CLK_ENABLE();
   __HAL_RCC_GPIOB_CLK_ENABLE();
+
 }
 
 /* USER CODE BEGIN 4 */
@@ -269,7 +262,7 @@ int fputc(int ch, FILE *f)
   * @retval None
   */
 /* USER CODE END Header_StartTask1 */
-void StartTask1(void const *argument)
+void StartTask1(void const * argument)
 {
 
   /* USER CODE BEGIN 5 */
@@ -277,10 +270,10 @@ void StartTask1(void const *argument)
   for (;;)
   {
     osDelay(2000);
-    printf("Task 1 Release counting semaphore\n");
+    printf("Task 1 Release semaphore\n");
     osSemaphoreRelease(myBinarySem01Handle);
   }
-  /* USER CODE END 5 */
+  /* USER CODE END 5 */ 
 }
 
 /* USER CODE BEGIN Header_StartTask2 */
@@ -290,37 +283,16 @@ void StartTask1(void const *argument)
 * @retval None
 */
 /* USER CODE END Header_StartTask2 */
-void StartTask2(void const *argument)
+void StartTask2(void const * argument)
 {
   /* USER CODE BEGIN StartTask2 */
   /* Infinite loop */
   for (;;)
   {
-    osDelay(2000);
-    printf("Task 2 Release counting semaphore\n");
-    osSemaphoreRelease(myBinarySem01Handle);
+    osSemaphoreWait(myBinarySem01Handle, 4000);
+    printf("Task 2 synchronized\n");
   }
   /* USER CODE END StartTask2 */
-}
-
-/* USER CODE BEGIN Header_StartTask3 */
-/**
-* @brief Function implementing the Task3 thread.
-* @param argument: Not used
-* @retval None
-*/
-/* USER CODE END Header_StartTask3 */
-void StartTask3(void const *argument)
-{
-  /* USER CODE BEGIN StartTask3 */
-  /* Infinite loop */
-  for (;;)
-  {
-    osSemaphoreWait(myCountingSem01Handle, 4000);
-    osSemaphoreWait(myCountingSem01Handle, 4000);
-    printf("Task 3 Synchronized\n");
-  }
-  /* USER CODE END StartTask3 */
 }
 
 /**
@@ -336,8 +308,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
   /* USER CODE BEGIN Callback 0 */
 
   /* USER CODE END Callback 0 */
-  if (htim->Instance == TIM6)
-  {
+  if (htim->Instance == TIM6) {
     HAL_IncTick();
   }
   /* USER CODE BEGIN Callback 1 */
@@ -361,7 +332,7 @@ void _Error_Handler(char *file, int line)
   /* USER CODE END Error_Handler_Debug */
 }
 
-#ifdef USE_FULL_ASSERT
+#ifdef  USE_FULL_ASSERT
 /**
   * @brief  Reports the name of the source file and the source line number
   *         where the assert_param error has occurred.
@@ -369,8 +340,8 @@ void _Error_Handler(char *file, int line)
   * @param  line: assert_param error line source number
   * @retval None
   */
-void assert_failed(uint8_t *file, uint32_t line)
-{
+void assert_failed(uint8_t* file, uint32_t line)
+{ 
   /* USER CODE BEGIN 6 */
   /* User can add his own implementation to report the file name and line number,
     ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */

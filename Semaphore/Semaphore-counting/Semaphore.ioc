@@ -1,8 +1,7 @@
 #MicroXplorer Configuration settings - do not modify
-FREERTOS.BinarySemaphores01=myBinarySem01,Dynamic,NULL
 FREERTOS.CountingSemaphores01=myCountingSem01,2,Dynamic,NULL
 FREERTOS.FootprintOK=true
-FREERTOS.IPParameters=Tasks01,FootprintOK,BinarySemaphores01,configUSE_COUNTING_SEMAPHORES,CountingSemaphores01
+FREERTOS.IPParameters=Tasks01,FootprintOK,configUSE_COUNTING_SEMAPHORES,CountingSemaphores01
 FREERTOS.Tasks01=Task1,0,128,StartTask1,Default,NULL,Dynamic,NULL,NULL;Task2,0,128,StartTask2,Default,NULL,Dynamic,NULL,NULL;Task3,-3,128,StartTask3,Default,NULL,Dynamic,NULL,NULL
 FREERTOS.configUSE_COUNTING_SEMAPHORES=1
 File.Version=6
