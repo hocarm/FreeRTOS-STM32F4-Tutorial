@@ -145,7 +145,7 @@ int main(void)
   Sender1Handle = osThreadCreate(osThread(Sender1), NULL);
 
   /* definition and creation of Receiver */
-  osThreadDef(Receiver, StartReceiver, osPriorityAboveNormal, 0, 128);
+  osThreadDef(Receiver, StartReceiver, osPriorityBelowNormal, 0, 128);
   ReceiverHandle = osThreadCreate(osThread(Receiver), NULL);
 
   /* definition and creation of Sender2 */
@@ -274,8 +274,9 @@ int fputc(int ch, FILE *f)
 /* USER CODE END Header_StartSender1 */
 void StartSender1(void const *argument)
 {
-  Data *dataMail;
+
   /* USER CODE BEGIN 5 */
+  Data *dataMail;
   /* Infinite loop */
   for (;;)
   {
