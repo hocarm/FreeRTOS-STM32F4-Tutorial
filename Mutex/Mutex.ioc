@@ -2,7 +2,7 @@
 FREERTOS.FootprintOK=true
 FREERTOS.IPParameters=Tasks01,FootprintOK,Mutexes01
 FREERTOS.Mutexes01=myMutex01,Dynamic,NULL
-FREERTOS.Tasks01=Task1,0,128,StartTask1,Default,NULL,Dynamic,NULL,NULL;Task2,0,128,StartTask2,Default,NULL,Dynamic,NULL,NULL
+FREERTOS.Tasks01=Task1,1,128,StartTask1,Default,NULL,Dynamic,NULL,NULL;Task2,0,128,StartTask2,Default,NULL,Dynamic,NULL,NULL
 File.Version=6
 KeepUserPlacement=false
 Mcu.Family=STM32F4

@@ -138,7 +138,7 @@ int main(void)
 
   /* Create the thread(s) */
   /* definition and creation of Task1 */
-  osThreadDef(Task1, StartTask1, osPriorityNormal, 0, 128);
+  osThreadDef(Task1, StartTask1, osPriorityAboveNormal, 0, 128);
   Task1Handle = osThreadCreate(osThread(Task1), NULL);
 
   /* definition and creation of Task2 */
