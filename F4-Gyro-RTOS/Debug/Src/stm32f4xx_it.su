@@ -1,0 +1,3 @@
+stm32f4xx_it.c:55:6:SysTick_Handler	0	static
+stm32f4xx_it.c:76:6:TIM6_DAC_IRQHandler	0	static
+stm32f4xx_it.c:90:6:OTG_FS_IRQHandler	0	static

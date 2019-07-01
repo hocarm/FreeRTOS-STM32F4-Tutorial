@@ -1,0 +1,8 @@
+main.c:193:6:SystemClock_Config	112	static
+main.c:108:5:main	88	static
+main.c:417:6:GYRO_Task	32	static
+main.c:532:6:StartTask02	8	static
+main.c:494:6:USB_Task	192	static
+main.c:514:6:StartTask01	8	static
+main.c:555:6:HAL_TIM_PeriodElapsedCallback	0	static
+main.c:574:6:_Error_Handler	0	static
